@@ -70,5 +70,79 @@ namespace PromoCodeFactory.WebHost.Controllers
 
             return employeeModel;
         }
-    }
+
+        /// <summary>
+        /// удаление пользователя по id
+        /// </summary>
+        /// <param name="id">Ид пользователя</param>
+        /// <returns>Статус кода возврата</returns>
+        [HttpDelete("DeletEmployee/{id:guid}")]
+        public async Task<IActionResult> DeletEmployyByIdAsync(Guid id)
+        {
+            try
+            {
+                await _employeeRepository.DeleteByIdAsync(id);
+               
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Создание пользователя
+        /// </summary>
+        /// <param name="employee">Модель пользователя</param>
+        /// <returns>Статус кода возврата</returns>
+        [HttpPost("CreateEmployee")]
+        public async Task<IActionResult> CreateEmployee(Employee employee)
+        {
+            try
+            {
+                if (!ModelState.IsValid) 
+                {
+                    string errorMessage = string.Join($"{Environment.NewLine}", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+
+                    return BadRequest(errorMessage);
+                }
+
+                await _employeeRepository.InsertItemData(employee);
+                
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Обновление данных пользователя
+        /// </summary>
+        /// <param name="employee">Модель пользоваетля</param>
+        /// <returns>Статус кода возврата</returns>
+        [HttpPut("UpdateEmployee")]
+        public async Task<IActionResult> UpdateEmployee(Employee employee)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    string errorMessage = string.Join($"{Environment.NewLine}", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                    return BadRequest(errorMessage);
+                }
+
+                await _employeeRepository.UpdateItemData(employee);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+        }
+    }  
 }
